@@ -1,10 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { WebView } from 'tns-core-modules/ui/web-view';
 import * as fs from 'tns-core-modules/file-system';
 import { WebViewInterface } from 'nativescript-webview-interface';
+import { Publication } from 'r2-shared-js/dist/es8-es2017/src/models/publication';
+import * as nsApp from 'tns-core-modules/application';
 
 import { Item } from "./item";
-import { ItemService } from "./item.service";
 
 declare var android: any;
 declare function escape(input: string): string;
@@ -15,15 +16,29 @@ declare function escape(input: string): string;
     templateUrl: "./items.component.html",
 })
 export class ItemsComponent implements OnInit {
-    jsData: string;
+    @ViewChild('webview')
+    public webviewEl: ElementRef;
 
-    webviewInterface: WebViewInterface;
+    public get webview() {
+      return this.webviewEl.nativeElement as WebView;
+    }
 
-    // This pattern makes use of Angular’s dependency injection implementation to inject an instance of the ItemService service into this class. 
-    // Angular knows about this service because it is included in your app’s main NgModule, defined in app.module.ts.
-    constructor(private itemService: ItemService) { }
+    private jsData: string;
 
-    ngOnInit(): void {
+    private webviewInterface: WebViewInterface;
+
+    private androidBackPressed = (evt: nsApp.AndroidActivityBackPressedEventData) => {
+      if (!this.webview) {
+        return;
+      }
+
+      if (this.webview.canGoBack) {
+        evt.cancel = true;
+        this.webview.goBack();
+      }
+    };
+
+    public ngOnInit(): void {
         let jsDataFilePath = 'tns_modules/nativescript-webview-interface/www/nativescript-webview-interface.js';
         if (global.TNS_WEBPACK) {
           jsDataFilePath = 'assets/js/nativescript-webview-interface.js';
@@ -34,22 +49,41 @@ export class ItemsComponent implements OnInit {
           .getFile(jsDataFilePath)
           .readText()
           .then((data) => this.jsData = data);
+
+        if (nsApp.android) {
+          nsApp.android.on(nsApp.AndroidApplication.activityBackPressedEvent, this.androidBackPressed);
+        }
+    }
+
+    public ngOnDestroy() {
+      if (nsApp.android) {
+        nsApp.android.removeEventListener(nsApp.AndroidApplication.activityBackPressedEvent, this.androidBackPressed);
+      }
     }
 
     public webViewLoaded(args: any) {
         const webview = args.object as WebView;
-        this.webviewInterface = new WebViewInterface(webview, '');
+        webview.on(WebView.loadFinishedEvent, (args: any) => {
+          if (args.error || !args.url) {
+            return;
+          }
+
+          if (webview.android) {
+            webview.android.loadUrl(`javascript:${escape(this.jsData)}`);
+          } else if (webview.ios) {
+            webview.ios.stringByEvaluatingJavaScriptFromString(this.jsData);
+          }
+        });
+
+        webview.src = '~/assets/books/twenty/toc.xhtml';
+        this.webviewInterface = new WebViewInterface(webview);
 
         if (webview.android) {
-          webview.android.loadUrl(`javascript:${escape(this.jsData)}`);
-
           const settings = webview.android.getSettings();
           settings.setAllowFileAccessFromFileURLs(true);
           settings.setAllowUniversalAccessFromFileURLs(true);
           settings.setSupportZoom(false);
           (<any>android.webkit.WebView).setWebContentsDebuggingEnabled(true);
-        } else if (webview.ios) {
-          webview.ios.stringByEvaluatingJavaScriptFromString(this.jsData);
         }
     }
 }
