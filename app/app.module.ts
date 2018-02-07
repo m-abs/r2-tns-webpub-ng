@@ -2,19 +2,15 @@ import 'nativescript-nodeify';
 
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+import { NativeScriptHttpModule } from "nativescript-angular/http";
 
 import { AppRoutingModule } from "./app.routing";
 import { AppComponent } from "./app.component";
-
-import { ItemsComponent } from "./item/items.component";
-
-// Uncomment and add to NgModule imports if you need to use two-way binding
-// import { NativeScriptFormsModule } from "nativescript-angular/forms";
-
-import { NativeScriptHttpModule } from "nativescript-angular/http";
 import { BackendService } from './services/backend.service';
 import { PublicationService } from './services/publications.service';
 import { PublicationsComponent } from './publications/publications.component';
+import { PublicationDetailsComponent } from './publications/publication-details.component';
+import { PublicationRenderComponent } from './publications/publication-render.component';
 
 @NgModule({
     bootstrap: [
@@ -27,8 +23,9 @@ import { PublicationsComponent } from './publications/publications.component';
     ],
     declarations: [
         AppComponent,
-        ItemsComponent,
         PublicationsComponent,
+        PublicationDetailsComponent,
+        PublicationRenderComponent,
     ],
     providers: [
         BackendService,

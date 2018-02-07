@@ -1,6 +1,6 @@
 <ListView [items]="items | async" class="list-group">
   <ng-template let-item="item">
-    <StackLayout class="list-group-item">
+    <StackLayout class="list-group-item" [nsRouterLink]="['/publications', item.base64]">
       <Label [text]="item.title"></Label>
     </StackLayout>
   </ng-template>

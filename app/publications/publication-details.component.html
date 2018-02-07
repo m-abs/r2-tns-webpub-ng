@@ -1,0 +1,4 @@
+<StackLayout *ngIf="item | async">
+  <Label [text]="(item | async)?.metadata.title"></Label>
+  <Button text="Open" [nsRouterLink]="['render']"></Button>
+</StackLayout>
