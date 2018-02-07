@@ -1,3 +1,7 @@
 node_modules
 hooks
 package-lock.json
+platforms
+app/**/*.js
+app/**/*.js.map
+app/**/*.css

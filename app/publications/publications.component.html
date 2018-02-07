@@ -1,0 +1,7 @@
+<ListView [items]="items | async" class="list-group">
+  <ng-template let-item="item">
+    <StackLayout class="list-group-item">
+      <Label [text]="item.title"></Label>
+    </StackLayout>
+  </ng-template>
+</ListView>

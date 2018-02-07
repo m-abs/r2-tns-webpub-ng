@@ -2,10 +2,11 @@ import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { WebView } from 'tns-core-modules/ui/web-view';
 import * as fs from 'tns-core-modules/file-system';
 import { WebViewInterface } from 'nativescript-webview-interface';
-import { Publication } from 'r2-shared-js/dist/es8-es2017/src/models/publication';
 import * as nsApp from 'tns-core-modules/application';
+import { JSON as TA_JSON } from 'ta-json';
 
 import { Item } from "./item";
+import { PublicationService } from "../services/publications.service";
 
 declare var android: any;
 declare function escape(input: string): string;
@@ -27,7 +28,7 @@ export class ItemsComponent implements OnInit {
 
     private webviewInterface: WebViewInterface;
 
-    private androidBackPressed = (evt: nsApp.AndroidActivityBackPressedEventData) => {
+    private readonly androidBackPressed = (evt: nsApp.AndroidActivityBackPressedEventData) => {
       if (!this.webview) {
         return;
       }
@@ -37,6 +38,8 @@ export class ItemsComponent implements OnInit {
         this.webview.goBack();
       }
     };
+
+    constructor(private publications: PublicationService) {}
 
     public ngOnInit(): void {
         let jsDataFilePath = 'tns_modules/nativescript-webview-interface/www/nativescript-webview-interface.js';
@@ -53,6 +56,8 @@ export class ItemsComponent implements OnInit {
         if (nsApp.android) {
           nsApp.android.on(nsApp.AndroidApplication.activityBackPressedEvent, this.androidBackPressed);
         }
+
+        this.publications.list().subscribe((data) => console.dir(data))
     }
 
     public ngOnDestroy() {
