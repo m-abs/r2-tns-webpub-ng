@@ -1,8 +1,8 @@
-import { Component } from "@angular/core";
+import { Component } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription } from 'rxjs/Subscription';
 
-import { PublicationService } from "../services/publications.service";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { Subscription } from "rxjs/Subscription";
+import { PublicationService } from '../services/publications.service';
 
 @Component({
   moduleId: module.id,
@@ -12,7 +12,7 @@ import { Subscription } from "rxjs/Subscription";
 export class PublicationsComponent {
   public readonly items = new BehaviorSubject<any[]>([]);
 
-  public sub: Subscription;;
+  public sub: Subscription;
 
   constructor(private publications: PublicationService) {}
 

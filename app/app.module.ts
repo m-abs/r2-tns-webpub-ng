@@ -1,16 +1,17 @@
 import 'nativescript-nodeify';
 
-import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptModule } from "nativescript-angular/nativescript.module";
-import { NativeScriptHttpModule } from "nativescript-angular/http";
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NativeScriptHttpModule } from 'nativescript-angular/http';
+import { NativeScriptModule } from 'nativescript-angular/nativescript.module';
 
-import { AppRoutingModule } from "./app.routing";
-import { AppComponent } from "./app.component";
-import { BackendService } from './services/backend.service';
-import { PublicationService } from './services/publications.service';
-import { PublicationsComponent } from './publications/publications.component';
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app.routing';
 import { PublicationDetailsComponent } from './publications/publication-details.component';
 import { PublicationRenderComponent } from './publications/publication-render.component';
+import { PublicationsComponent } from './publications/publications.component';
+import { BackendService } from './services/backend.service';
+import { PublicationService } from './services/publications.service';
+import { WebviewComponent } from './webview/webview.component';
 
 @NgModule({
     bootstrap: [
@@ -26,6 +27,7 @@ import { PublicationRenderComponent } from './publications/publication-render.co
         PublicationsComponent,
         PublicationDetailsComponent,
         PublicationRenderComponent,
+        WebviewComponent,
     ],
     providers: [
         BackendService,

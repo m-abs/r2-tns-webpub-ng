@@ -1,12 +1,12 @@
-import { Injectable } from "@angular/core";
-import { JSON as TA_JSON } from 'ta-json';
+import { Injectable } from '@angular/core';
 import { Publication } from 'r2-shared-js/dist/es8-es2017/src/models/publication';
-import { map } from 'rxjs/operators/map';
 import { of } from 'rxjs//observable/of';
 import 'rxjs/add/operator/do';
+import { map } from 'rxjs/operators/map';
+import { JSON as TA_JSON } from 'ta-json';
 
-import { BackendService } from "./backend.service";
-import { Observable } from "tns-core-modules/ui/frame/frame";
+import { Observable } from 'tns-core-modules/ui/frame/frame';
+import { BackendService } from './backend.service';
 
 @Injectable()
 export class PublicationService {
@@ -33,5 +33,13 @@ export class PublicationService {
         map((res) => res.json()),
       )
       .do((data) => this.metadataJsonCached.set(id, data));
+  }
+
+  public resourceUrl(id: string, path: string) {
+    return `${this.baseUrl(id)}/${path}`;
+  }
+
+  public baseUrl(id: string) {
+    return this.backend.makeURL(`pub/${id}`);
   }
 }

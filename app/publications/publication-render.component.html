@@ -1,0 +1,14 @@
+<GridLayout
+  rows="*"
+  columns="30, *, 30"
+>
+  <Button col="0" text="&lt;" (tap)="prev($event)"></Button>
+  <StackLayout
+    col="1"
+    ns-webview
+    [src]="(href | async)"
+    (webviewSwipe)="onSwipe($event)"
+    (webviewPageLoaded)="webviewPageLoaded($event)"
+  ></StackLayout>
+  <Button col="2" text="&gt;" (tap)="next($event)"></Button>
+</GridLayout>
