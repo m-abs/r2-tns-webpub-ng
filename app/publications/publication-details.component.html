@@ -1,4 +1,4 @@
-<GridLayout *ngIf="item | async" rows="*, 30, 40">
+<GridLayout *ngIf="item | async" rows="*, 30, 30, 40">
   <Image
     row="0"
     *ngIf="cover | async"
@@ -6,6 +6,7 @@
     [height]="(cover | async)?.height"
     [width]="(cover | async)?.width"
   ></Image>
-  <Label row="1" [text]="(item | async)?.metadata.title"></Label>
-  <Button row="2" text="Open" [nsRouterLink]="['render']"></Button>
+  <Label *ngIf="title$ | async" row="1" [text]="title$ | async"></Label>
+  <Label *ngIf="authors$ | async" row="2" [text]="authors$ | async"></Label>
+  <Button row="3" text="Open" [nsRouterLink]="['render']"></Button>
 </GridLayout>

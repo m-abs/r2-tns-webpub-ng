@@ -15,6 +15,11 @@ import { PublicationService } from '../services/publications.service';
 export class PublicationDetailsComponent implements OnInit, OnDestroy {
   public readonly item = new BehaviorSubject<any>(null);
 
+  public readonly metadata = this.item
+    .pipe(
+      map((item) => item && item.metadata ? item.metadata : null),
+    );
+
   public readonly cover = this.item
     .pipe(
       map((item) => {
@@ -32,6 +37,40 @@ export class PublicationDetailsComponent implements OnInit, OnDestroy {
       }),
     );
 
+  public readonly authors$ = this.metadata
+    .pipe(
+      map((metadata) => {
+        if (!metadata) {
+          return;
+        }
+
+        if (!metadata.author) {
+          return 'Unknown';
+        }
+
+        let authors = metadata.author;
+        if (typeof authors === 'string') {
+          authors = [{name: authors}];
+        }
+        if (!Array.isArray(authors)) {
+          authors = [authors];
+        }
+
+        return authors.map((author) => typeof author === 'string' ? author : author.name).join(', ');
+      }),
+    );
+
+  public readonly title$ = this.metadata
+    .pipe(
+      map((metadata) => {
+        if (!metadata) {
+          return;
+        }
+
+        return metadata.title || 'No name';
+      }),
+    );
+
   public sub: Subscription;
 
   private get id() {
@@ -46,6 +85,7 @@ export class PublicationDetailsComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     this.sub = this.publications
       .metadataJson(this.id)
+      .do((val) => console.dir(val.metadata))
       .subscribe(
         (item) => this.item.next(item),
         (err) => console.error(err)
