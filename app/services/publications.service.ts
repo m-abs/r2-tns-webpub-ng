@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OPDSFeed } from 'r2-opds-js/dist/es8-es2017/src/opds/opds2/opds2';
+import { initGlobals } from 'r2-shared-js/dist/es8-es2017/src//init-globals';
 import { Publication } from 'r2-shared-js/dist/es8-es2017/src/models/publication';
 import { of } from 'rxjs//observable/of';
 import 'rxjs/add/operator/do';
@@ -9,6 +10,8 @@ import { JSON as TA_JSON } from 'ta-json';
 import { Observable } from 'tns-core-modules/ui/frame/frame';
 
 import { BackendService } from './backend.service';
+
+initGlobals();
 
 @Injectable()
 export class PublicationService {
@@ -21,7 +24,7 @@ export class PublicationService {
       .get('opds2/publications.json')
       .pipe(
         map((res) => res.text()),
-        map((text) => TA_JSON.parse<OPDSFeed>(text, OPDSFeed)),
+        map((text) => TA_JSON.parse(text, OPDSFeed)),
       );
   }
 
@@ -33,7 +36,8 @@ export class PublicationService {
     return this.backend
       .get(`pub/${id}/manifest.json`)
       .pipe(
-        map((res) => res.json()),
+        map((res) => res.text()),
+        map((text) => TA_JSON.parse(text, Publication)),
       )
       .do((data) => this.metadataJsonCached.set(id, data));
   }

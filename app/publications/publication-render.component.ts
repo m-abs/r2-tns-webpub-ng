@@ -16,7 +16,7 @@ import { PublicationService } from '../services/publications.service';
   templateUrl: 'publication-render.component.html',
 })
 export class PublicationRenderComponent implements OnInit {
-  public readonly item$ = new BehaviorSubject<any>(null);
+  public readonly item$ = new BehaviorSubject<Publication>(null);
   public readonly spineIdx$ = new BehaviorSubject<number>(0);
 
   public readonly href = this.item$
@@ -27,11 +27,11 @@ export class PublicationRenderComponent implements OnInit {
           return null;
         }
 
-        if (!item.spine || !item.spine[spineIdx]) {
+        if (!item.Spine || !item.Spine[spineIdx]) {
           return null;
         }
 
-        return this.resourceUrl(item.spine[spineIdx].href);
+        return this.resourceUrl(item.Spine[spineIdx].Href);
       })
     );
 
@@ -93,11 +93,10 @@ export class PublicationRenderComponent implements OnInit {
     }
 
     const path = url.substr(this.baseUrl.length + 1).split('#')[0];
-
-    const spine = this.item$.value.spine;
+    const spine = this.item$.value.Spine;
     for (let i = 0; i < spine.length; i += 1) {
       const spineItem = spine[i];
-      if (spineItem.href === path) {
+      if (spineItem.Href === path) {
         this.spineIdx$.next(i);
         return;
       }

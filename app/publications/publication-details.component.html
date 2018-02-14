@@ -2,7 +2,7 @@
   <Image
     row="0"
     *ngIf="cover | async"
-    [src]="resourceUrl((cover | async)?.href)"
+    [src]="(cover | async)?.href"
     [height]="(cover | async)?.height"
     [width]="(cover | async)?.width"
   ></Image>

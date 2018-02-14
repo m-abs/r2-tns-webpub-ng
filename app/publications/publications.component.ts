@@ -52,7 +52,6 @@ export class PublicationsComponent implements OnInit, OnDestroy {
 
         return output;
       }),
-      tap((items) => console.dir(items)),
     );
 
   public sub: Subscription;

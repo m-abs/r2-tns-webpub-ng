@@ -30,7 +30,6 @@
     "r2-utils-js": "github:edrlab/r2-utils-js-dist#develop",
     "reflect-metadata": "~0.1.8",
     "rxjs": "^5.5.0",
-    "ta-json": "^2.3.1",
     "tns-core-modules": "^3.4.0",
     "zone.js": "^0.8.4"
   },
