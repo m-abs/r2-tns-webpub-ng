@@ -23,6 +23,7 @@
     "nativescript-angular": "^5.2.0",
     "nativescript-nodeify": "^0.6.0",
     "nativescript-theme-core": "~1.0.2",
+    "nativescript-tslib": "^1.8.1-beta.4",
     "nativescript-webview-interface": "^1.4.2",
     "r2-lcp-js": "github:edrlab/r2-lcp-js-dist#develop",
     "r2-opds-js": "github:edrlab/r2-opds-js-dist#develop",
