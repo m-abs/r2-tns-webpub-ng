@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { OPDSFeed } from 'r2-opds-js/dist/es8-es2017/src/opds/opds2/opds2';
 import { Publication } from 'r2-shared-js/dist/es8-es2017/src/models/publication';
 import { of } from 'rxjs//observable/of';
 import 'rxjs/add/operator/do';
 import { map } from 'rxjs/operators/map';
 import { JSON as TA_JSON } from 'ta-json';
-
 import { Observable } from 'tns-core-modules/ui/frame/frame';
+
 import { BackendService } from './backend.service';
 
 @Injectable()
@@ -16,10 +17,12 @@ export class PublicationService {
 
   public list() {
     return this.backend
-      .get('pub/')
+      .get('opds2/publications.json')
       .pipe(
-        map((res) => res.json()),
-      );
+        map((res) => res.text()),
+        map((text) => TA_JSON.deserialize(text, OPDSFeed)),
+      )
+      .do((feed) => console.dir(feed));
   }
 
   public metadataJson(id: string) {

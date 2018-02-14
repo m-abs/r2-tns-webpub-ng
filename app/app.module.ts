@@ -1,5 +1,3 @@
-import 'nativescript-nodeify';
-
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { NativeScriptHttpModule } from 'nativescript-angular/http';
 import { NativeScriptModule } from 'nativescript-angular/nativescript.module';
