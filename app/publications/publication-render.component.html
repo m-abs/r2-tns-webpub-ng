@@ -1,5 +1,5 @@
 <GridLayout
-  rows="*"
+  rows="*, auto, 20"
   columns="30, *, 30"
 >
   <Button col="0" text="&lt;" (tap)="prev($event)"></Button>
@@ -11,4 +11,11 @@
     (webviewPageLoaded)="webviewPageLoaded($event)"
   ></StackLayout>
   <Button col="2" text="&gt;" (tap)="next($event)"></Button>
+
+  <StackLayout row="1" colSpan="3" *ngIf="player.position | async" orientation="horizontal">
+    <Button text="||" (tap)="player.pause()"></Button>
+    <Button text="|>" (tap)="player.play()"></Button>
+  </StackLayout>
+
+  <Slider padding="0" margin="0" row="2" colSpan="3" *ngIf="player.position | async" [minValue]="0" [maxValue]="(player.position | async)?.duration" [value]="(player.position | async)?.currentTime" class="slider"></Slider>
 </GridLayout>

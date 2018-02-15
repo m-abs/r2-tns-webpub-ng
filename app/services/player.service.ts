@@ -1,4 +1,4 @@
-import { Injectable} from '@angular/core';
+import { Injectable, NgZone} from '@angular/core';
 import { MediaTrack, PlaybackEvent, PlaybackEventListener, Playlist as TNSPlaylist, TNSAudioPlayer } from '@nota/nativescript-audioplayer';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -61,11 +61,8 @@ export class PlayerService implements IPlayerService {
     return this.player$.toPromise();
   }
 
-  constructor() {
+  constructor(private readonly zone: NgZone) {
     this.initTNSPlayer();
-    console.dir({
-      instance: this.instance,
-    });
   }
 
   private async ensurePlayingState() {
@@ -294,15 +291,10 @@ export class PlayerService implements IPlayerService {
       return;
     }
 
-    this.position.next(position);
+    this.zone.run(() => this.position.next(position));
   }
 
   protected async _onPlaybackEvent(evt: PlaybackEvent, data?: any) {
-    console.dir({
-      evt,
-      data,
-      name: '_onPlaybackEvent',
-    });
     switch (evt) {
       case PlaybackEvent.Buffering: {
         this.setPlaying(true);
@@ -332,11 +324,11 @@ export class PlayerService implements IPlayerService {
         break;
       }
       case PlaybackEvent.TimeChanged: {
-        const position: PlaybackPosition = {
+        const position = {
           playlistIndex: await this.getCurrentPlaylistIndex(),
           currentTime: await this.getCurrentTime(),
           duration: await this.getCurrentDuration(),
-        };
+        } as PlaybackPosition;
 
         this.updatePosition(position);
 

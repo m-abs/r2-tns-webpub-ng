@@ -5,8 +5,11 @@ import { Publication } from 'r2-shared-js/dist/es8-es2017/src/models/publication
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 import { combineLatest } from 'rxjs/operators/combineLatest';
+import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
+import { filter } from 'rxjs/operators/filter';
 import { map } from 'rxjs/operators/map';
 import { switchMap } from 'rxjs/operators/switchMap';
+import { tap } from 'rxjs/operators/tap';
 import { Subscription } from 'rxjs/Subscription';
 import { SwipeDirection, SwipeGestureEventData } from 'tns-core-modules/ui/gestures/gestures';
 import { EventData, Observable } from 'tns-core-modules/ui/page';
@@ -39,51 +42,43 @@ export class PublicationRenderComponent implements OnInit, OnDestroy {
       }),
     );
 
-  public readonly mediaOverlay = this.link$
-    .pipe(
-      map((links) => {
-        if (!links) {
-          return null;
-        }
-
-        return links.filter((link) => link.HasRel('media-overlay'));
-      }),
-      switchMap((mosLink) => {
-        if (!mosLink || mosLink.length === 0) {
-          return of(null);
-        }
-
-        return this.publications.mediaOverlay(this.id, mosLink[0].Href);
-      }),
-      map((mediaOverlays) => {
-        if (!mediaOverlays) {
-          return null;
-        }
-
-        const mos = new MediaOverlay(mediaOverlays);
-
-        for (const i of mos.audioPlaylistIdxToChildrens.get(2)) {
-          console.log(`${i.audio} - ${i.text} -> ${JSON.stringify(i.time)}`);
-        }
-
-        return mos;
-      }),
-    );
+  public readonly mediaOverlay = new BehaviorSubject<MediaOverlay>(null);
 
   public readonly href = this.item$
     .pipe(
-      combineLatest(this.spineIdx$),
-      map(([item, spineIdx]) => {
+      combineLatest(
+        this.spineIdx$,
+        this.player.position,
+        this.mediaOverlay,
+      ),
+      map(([item, spineIdx, position, mediaOverlay]) => {
         if (!item) {
           return null;
         }
 
-        if (!item.Spine || !item.Spine[spineIdx]) {
+        if (!mediaOverlay || !position) {
+          if (!item.Spine || !item.Spine[spineIdx]) {
+            return null;
+          }
+
+          return this.resourceUrl(item.Spine[spineIdx].Href);
+        }
+
+        const children = mediaOverlay.audioPlaylistIdxToChildrens.get(position.playlistIndex);
+        if (!children) {
           return null;
         }
 
-        return this.resourceUrl(item.Spine[spineIdx].Href);
-      })
+        for (const child of children) {
+          const {start, end} = child.time;
+          if (start <= position.currentTime && position.currentTime <= end) {
+            return this.resourceUrl(child.text);
+          }
+        }
+        return null;
+      }),
+      filter((val) => !!val),
+      distinctUntilChanged(),
     );
 
   public subs = [] as Subscription[];
@@ -112,10 +107,35 @@ export class PublicationRenderComponent implements OnInit, OnDestroy {
         )
       );
 
+
     this.subs.push(
-      this.mediaOverlay
+      this.link$
+        .pipe(
+          map((links) => {
+            if (!links) {
+              return null;
+            }
+
+            return links.filter((link) => link.HasRel('media-overlay'));
+          }),
+          switchMap((mosLink) => {
+            if (!mosLink || mosLink.length === 0) {
+              return of(null);
+            }
+
+            return this.publications.mediaOverlay(this.id, mosLink[0].Href);
+          }),
+          map((mediaOverlays) => {
+            if (!mediaOverlays) {
+              return null;
+            }
+
+            return new MediaOverlay(mediaOverlays);
+          }),
+        )
         .subscribe((mos) => {
           if (!mos) {
+            this.mediaOverlay.next(null);
             return;
           }
 
@@ -128,9 +148,10 @@ export class PublicationRenderComponent implements OnInit, OnDestroy {
           }
 
           const audioPlaylist = new Playlist(this.id, ...audioTracks);
-          console.dir(audioPlaylist);
           this.player.loadPlaylist(audioPlaylist);
           this.player.play();
+
+          this.mediaOverlay.next(mos);
         },
         (err) => {
           console.error(err);

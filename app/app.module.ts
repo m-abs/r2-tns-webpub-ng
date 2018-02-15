@@ -3,7 +3,7 @@ import 'nativescript-tslib';
 import { initGlobals } from 'r2-shared-js/dist/es8-es2017/src/init-globals';
 initGlobals();
 
-import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { ErrorHandler, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { NativeScriptHttpModule } from 'nativescript-angular/http';
 import { NativeScriptModule } from 'nativescript-angular/nativescript.module';
 
@@ -15,6 +15,13 @@ import { PublicationsComponent } from './publications/publications.component';
 import { BackendService } from './services/backend.service';
 import { PublicationService } from './services/publications.service';
 import { WebviewComponent } from './webview/webview.component';
+
+export class LocalErrorHandler extends ErrorHandler {
+    handleError(error: Error) {
+        super.handleError(error);
+        debugger;
+    }
+}
 
 @NgModule({
     bootstrap: [
@@ -35,6 +42,7 @@ import { WebviewComponent } from './webview/webview.component';
     providers: [
         BackendService,
         PublicationService,
+        { provide: ErrorHandler, useClass: LocalErrorHandler },
     ],
     schemas: [
         NO_ERRORS_SCHEMA
