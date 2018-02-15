@@ -56,15 +56,28 @@ export class PublicationsComponent implements OnInit, OnDestroy {
 
   public sub: Subscription;
 
-  constructor(private readonly publications: PublicationService) {}
+  constructor(
+    private readonly publications: PublicationService,
+  ) {}
 
   public ngOnInit() {
-    this.sub = this.publications.list().subscribe(this.feed);
+    this.reload();
   }
 
   public ngOnDestroy() {
+    this.unsub();
+  }
+
+  public reload() {
+    this.unsub();
+    this.sub = this.publications.list().subscribe(this.feed);
+  }
+
+  private unsub() {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+
+    this.sub = null;
   }
 }

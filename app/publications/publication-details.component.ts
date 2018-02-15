@@ -36,9 +36,9 @@ export class PublicationDetailsComponent implements OnInit, OnDestroy {
         for (const resource of resources) {
           if (resource.Rel && resource.Rel.indexOf('cover') !== -1) {
             return {
-              height: resource.Height || '300',
+              height: resource.Height || 300,
               href: this.resourceUrl(resource.Href),
-              width: resource.Width || '300',
+              width: resource.Width || 300,
             };
           }
         }

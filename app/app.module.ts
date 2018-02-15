@@ -1,5 +1,7 @@
 import 'nativescript-nodeify';
 import 'nativescript-tslib';
+import { initGlobals } from 'r2-shared-js/dist/es8-es2017/src/init-globals';
+initGlobals();
 
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { NativeScriptHttpModule } from 'nativescript-angular/http';

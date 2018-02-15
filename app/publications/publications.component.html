@@ -1,3 +1,6 @@
+<ActionBar title="Title" icon="" class="action-bar">
+  <ActionItem (tap)="reload()" text="reload"></ActionItem>
+</ActionBar>
 <ListView [items]="items | async" class="list-group">
   <ng-template let-item="item">
     <StackLayout class="list-group-item" [nsRouterLink]="['/publications', item.base64]">
